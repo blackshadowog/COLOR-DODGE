@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Color Dodge – Reflexes in Cherry Blossom Style</title>
+
+  <!-- Japanese-style font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: url('https://idsb.tmgrup.com.tr/ly/uploads/images/2025/03/12/thumbs/800x531/372657.jpg') no-repeat center center/cover;
+      background-size: cover;
+      font-family: 'Noto Sans JP', sans-serif;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 8px #ff69b4, 0 0 20px rgba(255,182,193,0.7);
+      transform: perspective(600px) rotateX(5deg);
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 10px 20px;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    a {
+      color: #ff1493;
+      font-weight: bold;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    a:hover {
+      color: #ff69b4;
+    }
+
+    .btn-play {
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+      color: white;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px #000;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 8px 20px rgba(255,182,193,0.6);
+    }
+
+    .btn-play:hover {
+      transform: scale(1.15) translateY(-5px);
+      box-shadow: 0 12px 30px rgba(255,105,180,0.8);
+    }
+
+    .credit {
+      margin-top: 40px;
+      font-size: 1rem;
+      color: #ffb6c1;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* Falling petals */
+    .petal {
+      position: fixed;
+      top: -10px;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50% 50% 50% 50%;
+      opacity: 0.8;
+      pointer-events: none;
+      box-shadow: inset -2px -2px 4px rgba(255, 105, 180, 0.6);
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Color Dodge – Reflexes in Cherry Blossom Style</h1>
+  <p>Test your reflexes in this fast-paced color-matching game! Dodge incoming walls by matching your box color and see how high you can score.</p>
+  <p>Challenge yourself and improve your reaction speed while enjoying a soft cherry blossom theme.</p>
+
+  <button class="btn-play" onclick="window.location.href='col-game.html'">Play Game</button>
+
+  <div class="credit">
+    Built by <strong>BLACK SHADOW</strong> – 
+    <a href="https://www.linkedin.com/in/abhishek-tiwari-b448b5328/" target="_blank">LinkedIn</a>
+  </div>
+
+  <script>
+    // Create falling petals
+    function createPetal() {
+      const petal = document.createElement("div");
+      petal.classList.add("petal");
+      document.body.appendChild(petal);
+
+      // Random start position
+      petal.style.left = Math.random() * window.innerWidth + "px";
+
+      // Random size
+      const size = Math.random() * 15 + 10;
+      petal.style.width = size + "px";
+      petal.style.height = size + "px";
+
+      // Random animation duration
+      const duration = Math.random() * 5 + 5;
+      petal.style.animationDuration = duration + "s";
+
+      // Random horizontal drifting
+      petal.style.animationTimingFunction = "cubic-bezier(.25,.75,.75,.25)";
+
+      // Remove petal after animation
+      setTimeout(() => {
+        petal.remove();
+      }, duration * 1000);
+    }
+
+    setInterval(createPetal, 500);
+  </script>
+</body>
+</html>

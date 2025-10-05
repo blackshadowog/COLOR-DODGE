@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Dodge – Sakura Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://ideogram.ai/assets/image/lossless/response/HNwuKp56Sfet2vLMNlZWUA') no-repeat center center/cover;
+      backdrop-filter: blur(8px);
+      font-family: "Noto Sans JP", sans-serif;
+      overflow: hidden;
+    }
+
+    canvas {
+      background: rgba(255, 240, 245, 0.8);
+      border: 3px solid #ff69b4;
+      box-shadow: 0 0 20px rgba(255,182,193,0.8);
+      border-radius: 15px;
+      max-width: 90vw;
+      max-height: 70vh;
+    }
+
+    #hud {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      display: flex;
+      gap: 20px;
+      padding: 6px 15px;
+      background: rgba(255, 240, 245, 0.7);
+      border-radius: 12px;
+      border: 2px solid #ff69b4;
+      color: #ff1493;
+      font-weight: bold;
+      box-shadow: 0 0 10px #ff69b4;
+    }
+
+    #controls {
+      position: fixed;
+      bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: "Noto Sans JP", sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px #000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #fff;
+    }
+
+    @media (max-width: 600px) {
+      #hud { font-size: 14px; gap: 10px; padding: 4px 10px; }
+      button { font-size: 12px; padding: 6px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  
+  <div id="hud">
+    <div>Score: <span id="score">0</span></div>
+    <div>High Score: <span id="highScore">0</span></div>
+  </div>
+
+  <div id="controls">
+    <div id="colorButtons"></div>
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = Math.min(window.innerWidth * 0.9, 500);
+      canvas.height = Math.min(window.innerHeight * 0.7, 500);
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const music = document.getElementById("bgMusic");
+    const colors = ["red", "blue", "green", "yellow"];
+    let playerColor = "red";
+    let walls = [];
+    let gameOver = true;
+    let speed = 2;
+    let score = 0;
+    let highScore = localStorage.getItem("colorDodgeHighScore") || 0;
+    let boxSize = 100;
+
+    const scoreEl = document.getElementById("score");
+    const highScoreEl = document.getElementById("highScore");
+    highScoreEl.textContent = highScore;
+
+    // Color buttons
+    const colorButtons = document.getElementById("colorButtons");
+    colors.forEach(c => {
+      const btn = document.createElement("button");
+      btn.textContent = c.toUpperCase();
+      btn.style.background = c;
+      btn.onclick = () => (playerColor = c);
+      colorButtons.appendChild(btn);
+    });
+
+    function spawnWall() {
+      const side = Math.floor(Math.random() * 4);
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      walls.push({ side, color, offset: 0 });
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = playerColor;
+      ctx.fillRect(
+        canvas.width / 2 - boxSize / 2,
+        canvas.height / 2 - boxSize / 2,
+        boxSize,
+        boxSize
+      );
+    }
+
+    function drawWalls() {
+      for (let wall of walls) {
+        ctx.fillStyle = wall.color;
+        if (wall.side === 0) ctx.fillRect(0, -100 + wall.offset, canvas.width, 100);
+        if (wall.side === 1) ctx.fillRect(canvas.width - wall.offset, 0, 100, canvas.height);
+        if (wall.side === 2) ctx.fillRect(0, canvas.height - wall.offset, canvas.width, 100);
+        if (wall.side === 3) ctx.fillRect(-100 + wall.offset, 0, 100, canvas.height);
+      }
+    }
+
+    function updateWalls() {
+      for (let wall of walls) {
+        wall.offset += speed;
+        if (wall.offset >= 200) {
+          if (wall.color !== playerColor) {
+            endGame();
+          } else {
+            score++;
+            scoreEl.textContent = score;
+            speed += 0.2;
+          }
+        }
+      }
+      walls = walls.filter(w => w.offset < 220);
+    }
+
+    function loop() {
+      if (gameOver) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPlayer();
+      drawWalls();
+      updateWalls();
+      requestAnimationFrame(loop);
+    }
+
+    function startGame() {
+      gameOver = false;
+      walls = [];
+      speed = 2;
+      score = 0;
+      scoreEl.textContent = score;
+      document.getElementById("startBtn").textContent = "Restart";
+      loop();
+      clearInterval(window.wallTimer);
+      window.wallTimer = setInterval(spawnWall, 1500);
+      music.volume = 0.5;
+      music.play().catch(()=>{});
+    }
+
+    function endGame() {
+      gameOver = true;
+      clearInterval(window.wallTimer);
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("colorDodgeHighScore", highScore);
+        highScoreEl.textContent = highScore;
+      }
+      ctx.fillStyle = "rgba(0,0,0,0.5)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      ctx.font = "20px Noto Sans JP";
+      ctx.fillText("Game Over!", canvas.width/2 - 50, canvas.height/2 - 20);
+      ctx.fillText("Score: " + score, canvas.width/2 - 40, canvas.height/2 + 10);
+    }
+
+    document.getElementById("startBtn").addEventListener("click", startGame);
+  </script>
+</body>
+</html>

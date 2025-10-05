@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Dodge – Sakura Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="game.css" />
+</head>
+<body>
+  <div id="gameContainer">
+    <div id="topBar">
+      <div id="score">Score: <span id="scoreValue">0</span></div>
+      <div id="highScore">High: <span id="highScoreValue">0</span></div>
+    </div>
+    
+    <canvas id="game"></canvas>
+    
+    <div id="controlsWrapper">
+      <div id="controlsContainer">
+        <div class="buttonGroup">
+          <button class="colorBtn active" data-color="red">
+            RED
+            <div class="keyHint">W</div>
+          </button>
+          <button class="colorBtn" data-color="blue">
+            BLUE
+            <div class="keyHint">A</div>
+          </button>
+        </div>
+        
+        <button id="startBtn">START</button>
+        
+        <div class="buttonGroup">
+          <button class="colorBtn" data-color="yellow">
+            YELLOW
+            <div class="keyHint">D</div>
+          </button>
+          <button class="colorBtn" data-color="green">
+            GREEN
+            <div class="keyHint">S</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script src="game.js"></script>
+</body>
+</html>
